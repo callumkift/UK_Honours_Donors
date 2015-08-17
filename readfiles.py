@@ -187,9 +187,12 @@ def getkeys(firstfile, ftype):
             with open(firstfile, "r") as f:
                 keys = f.readline().split(delim)
             print "Check -- got keys"
-        return keys
+            return keys
+        else:
+            return []
     else:
         return []
+
 
 def extractdata(datafiles, ftype, ncol):
     """
@@ -205,7 +208,6 @@ def extractdata(datafiles, ftype, ncol):
         delim = "\t"
     elif ftype == "csv":
         delim = ","
-
 
     if ncol or delim:
 
@@ -223,24 +225,22 @@ def extractdata(datafiles, ftype, ncol):
                         for q in range(ncol):
                             data2dlist[q].append(column[q])
                     else:
-                        print "IGNORED -- %s" %line
-                        # raw_input("enter")
-        print "Read -- %s files" %ftype
-        print len(data2dlist[6]), data2dlist[6][0]
-        raw_input("enter")
+                        print "IGNORED -- %s" % line
+            add2pastreads(file, ftype)
+        print "Read -- %s files" % ftype
         return data2dlist
     else:
         print "Check -- not initiated."
         return filedata
 
 
-def add2pastreads(ftype, filedone):
+def add2pastreads(filedone, ftype):
     """
     Adds the file to read list.
     If ftype=tsv, -> adds filedone to past read honours list.
     If ftype=csv, -> adds filedone to past read donors list.
-    :param ftype:
-    :param filedone:
+    :param filedone: file to add
+    :param ftype: file type
     :return:
     """
     pastread = ""
@@ -254,7 +254,7 @@ def add2pastreads(ftype, filedone):
         return
     else:
         with open(pastread, "a") as pr:
-            # pr.write(filedone + "\n")
+            pr.write(filedone + "\n")
             pr.close()
             print "-- Written %s to readfile" % filedone
     return
