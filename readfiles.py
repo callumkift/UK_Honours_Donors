@@ -4,8 +4,6 @@ Contains methods that deal with reading files and extracting data from them.
 """
 
 import os
-import string
-import csv
 
 
 def getpath2honours():
@@ -42,7 +40,7 @@ def getpath2honours():
             else:
                 "\nError: Invalid path!\n"
                 pass
-    print "Check - path2honours file: %s" % path2hon
+    print "Check -- path2honours file: %s" % path2hon
     return path2hon
 
 
@@ -80,6 +78,56 @@ def getpath2donations():
             else:
                 "\nError: Invalid path!\n"
                 pass
-    print "Check - path2donors file: %s" % path2don
+    print "Check -- path2donors file: %s" % path2don
     return path2don
 
+
+def findhonfiles(path2files):
+    """
+    Method finds the honour TSV files to read and extract data.
+    :param path2files: Path to directory that contains honour files
+    :return: A list of the honour files to read.
+    """
+
+    honfiles = []
+
+    if os.path.isdir(path2files):
+        for file in os.listdir(path2files):
+            if file.endswith(".tsv"):
+                honfiles.append(path2files + str(file))
+
+        if len(honfiles) != 0:
+            for i in range(len(honfiles)):
+                print "Honour files -- %s" % honfiles[i]
+            return honfiles
+        else:
+            print "\nError - findhonfiles(path2files): No honour files found in given directory.\n"
+            return
+    else:
+        print "\nError - findhonfiles(path2files): Directory does not exist.\n"
+        return honfiles
+
+def finddonfiles(path2files):
+    """
+    Method finds the donor CSV files to read and extract data.
+    :param path2files: Path to directory that contains honour files
+    :return: A list of the donor files to read.
+    """
+
+    donfiles = []
+
+    if os.path.isdir(path2files):
+        for file in os.listdir(path2files):
+            if file.endswith(".csv"):
+                donfiles.append(path2files + str(file))
+
+        if len(donfiles) != 0:
+            for i in range(len(donfiles)):
+                print "Donor files -- %s" % donfiles[i]
+            return donfiles
+        else:
+            print "\nError - finddonfiles(path2files): No donor files found in given directory.\n"
+            return
+    else:
+        print "\nError - finddonfiles(path2files): Directory does not exist.\n"
+        return donfiles
