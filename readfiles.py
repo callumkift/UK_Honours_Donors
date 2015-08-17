@@ -141,53 +141,97 @@ def readfiles(filelist):
     :return: a list of extracted data from the filelist
     """
 
-    data = []
-    filetype = filelist[0][-3:]
-    prev_read = readpastfiles(filetype)
-
     if len(filelist) != 0:
+        toread = []
+        filetype = filelist[0][-3:]
+        prev_read = readpastfiles(filetype)
         for i in range(len(filelist)):
             # Only extracts data from files that have not been previously read.
             if filelist[i] not in prev_read:
-                data.append(extractdata(filelist[i], filetype))
-                add2pastreads(filetype, filelist[i])
+                toread.append(filelist[i])
             else:
                 print "%s -- previously read" % filelist[i]
 
-        return data
+        if len(toread) != 0:
+            data_dict = {}
+            keys = getkeys(toread[0], filetype)
+
+            if len(keys) != 0:
+                extractdata(toread, filetype, len(keys))
+            else:
+                print "No keys found"
+                return
+        else:
+            print "Nothing to read"
+            return
+
     else:
-        print "\nError - readcsvfiles(csvlist): No CSV files in list. Are there CSV files in given directory?\n"
-        return data
+        print "\nError - readfiles(filelist): No files in list. Are there files in given directory?\n"
+        return
 
 
-def extractdata(datafile, ftype):
+def getkeys(firstfile, ftype):
+    """
+    Gets the keys for the dictionary, by reading the first line of the file.
+    :param firstfile: the first file in the list of files to read.
+    :param ftype: file type
+    :return: list of keys
+    """
+    if ftype == "tsv":
+        delim = "\t"
+    elif ftype == "csv":
+        delim = ","
+
+    if delim:
+        if os.path.exists(firstfile):
+            with open(firstfile, "r") as f:
+                keys = f.readline().split(delim)
+            print "Check -- got keys"
+        return keys
+    else:
+        return []
+
+def extractdata(datafiles, ftype, ncol):
     """
     Extracts the data from the data file
-    :param datafile: file containing data
+    :param datafiles: file containing data
     :param ftype: filetype
+    :param ncol: number of keys = number of columns in file
     :return: A list containing  data
     """
     filedata = []
 
-
     if ftype == "tsv":
-        ncol = 8
         delim = "\t"
     elif ftype == "csv":
-        ncol = 23
         delim = ","
 
+
     if ncol or delim:
-        if os.path.exists(datafile):
-            print "Open -- %s" %datafile
-            with open(datafile, "r") as f:
-                keys = f.readline().split(delim)
-            print keys
-        return filedata
+
+        data2dlist = [[] for i in range(ncol)]
+
+        for file in datafiles:
+            print "Open -- %s" % file
+            with open(file, "r") as f:
+                f.readline()
+                for line in f:
+                    line = line.strip() + "."
+                    column = line.split(delim)
+                    if len(column) == ncol:
+                        # print line
+                        for q in range(ncol):
+                            data2dlist[q].append(column[q])
+                    else:
+                        print "IGNORED -- %s" %line
+                        # raw_input("enter")
+        print "Read -- %s files" %ftype
+        print len(data2dlist[6]), data2dlist[6][0]
+        raw_input("enter")
+        return data2dlist
     else:
         print "Check -- not initiated."
         return filedata
-
 
 
 def add2pastreads(ftype, filedone):
