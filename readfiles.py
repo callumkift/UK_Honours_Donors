@@ -107,6 +107,7 @@ def findhonfiles(path2files):
         print "\nError - findhonfiles(path2files): Directory does not exist.\n"
         return honfiles
 
+
 def finddonfiles(path2files):
     """
     Method finds the donor CSV files to read and extract data.
@@ -131,3 +132,120 @@ def finddonfiles(path2files):
     else:
         print "\nError - finddonfiles(path2files): Directory does not exist.\n"
         return donfiles
+
+
+def readfiles(filelist):
+    """
+    Reads files and puts data into a list
+    :param filelist: list of files
+    :return: a list of extracted data from the filelist
+    """
+
+    data = []
+    filetype = filelist[0][-3:]
+    prev_read = readpastfiles(filetype)
+
+    if len(filelist) != 0:
+        for i in range(len(filelist)):
+            # Only extracts data from files that have not been previously read.
+            if filelist[i] not in prev_read:
+                data.append(extractdata(filelist[i], filetype))
+                add2pastreads(filetype, filelist[i])
+            else:
+                print "%s -- previously read" % filelist[i]
+
+        return data
+    else:
+        print "\nError - readcsvfiles(csvlist): No CSV files in list. Are there CSV files in given directory?\n"
+        return data
+
+
+def extractdata(datafile, ftype):
+    """
+    Extracts the data from the data file
+    :param datafile: file containing data
+    :param ftype: filetype
+    :return: A list containing  data
+    """
+    filedata = []
+
+
+    if ftype == "tsv":
+        ncol = 8
+        delim = "\t"
+    elif ftype == "csv":
+        ncol = 23
+        delim = ","
+
+    if ncol or delim:
+        if os.path.exists(datafile):
+            print "Open -- %s" %datafile
+            with open(datafile, "r") as f:
+                keys = f.readline().split(delim)
+            print keys
+        return filedata
+    else:
+        print "Check -- not initiated."
+        return filedata
+
+
+
+def add2pastreads(ftype, filedone):
+    """
+    Adds the file to read list.
+    If ftype=tsv, -> adds filedone to past read honours list.
+    If ftype=csv, -> adds filedone to past read donors list.
+    :param ftype:
+    :param filedone:
+    :return:
+    """
+    pastread = ""
+
+    if ftype == "tsv":
+        pastread = ".pastread_honours.txt"
+    elif ftype == "csv":
+        pastread = ".pastread_donors.txt"
+
+    if pastread == "":
+        return
+    else:
+        with open(pastread, "a") as pr:
+            # pr.write(filedone + "\n")
+            pr.close()
+            print "-- Written %s to readfile" % filedone
+    return
+
+
+def readpastfiles(ftype):
+    """
+    Reads from a file the previously read files for the specific file type. If ftype=tsv, it will
+    read previously read honours list files. If ftype=csv, it will read the previously read donor
+    files.
+    :param ftype: File type
+    :return: List of previously read files
+    """
+
+    pastread = ""
+    read_files = []
+
+    if ftype == "tsv":
+        pastread = ".pastread_honours.txt"
+    elif ftype == "csv":
+        pastread = ".pastread_donors.txt"
+
+    if pastread == "":
+        return read_files
+    else:
+        if os.path.exists(pastread):
+            print "Check -- Reads past read."
+            with open(pastread, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    read_files.append(line)
+        else:
+            # creates empty file
+            with open(pastread, "w") as f:
+                f.close()
+                print "%s -- created" % pastread
+
+        return read_files

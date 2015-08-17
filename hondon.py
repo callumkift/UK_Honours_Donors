@@ -31,5 +31,8 @@ if __name__ == '__main__':
     p2honours = rf.getpath2honours()
     p2donors = rf.getpath2donations()
 
-    rf.findhonfiles(p2honours)
-    rf.finddonfiles(p2donors)
+    honoursfilelist = rf.findhonfiles(p2honours)
+    donorfilelist = rf.finddonfiles(p2donors)
+
+    rf.readfiles(honoursfilelist)
+    rf.readfiles(donorfilelist)
