@@ -37,4 +37,3 @@ if __name__ == '__main__':
     hon_dict = rf.readfiles(honoursfilelist)
     don_dict = rf.readfiles(donorfilelist)
 
-    print len(hon_dict), len(don_dict)
