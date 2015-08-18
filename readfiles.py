@@ -138,7 +138,7 @@ def readfiles(filelist):
     """
     Reads files and puts data into a list
     :param filelist: list of files
-    :return: a list of extracted data from the filelist
+    :return: a dictionary; key = data_name, values = list_of_values_for_key
     """
 
     if len(filelist) != 0:
@@ -157,17 +157,23 @@ def readfiles(filelist):
             keys = getkeys(toread[0], filetype)
 
             if len(keys) != 0:
-                extractdata(toread, filetype, len(keys))
+                datalist = extractdata(toread, filetype, len(keys))
+                if len(datalist) == len(keys):
+                    for i in range(len(keys)):
+                        data_dict[keys[i]]=datalist[i]
+                    return data_dict
+                else:
+                    print "\nError - #keys != #columns"
             else:
                 print "No keys found"
-                return
+                return {}
         else:
             print "Nothing to read"
-            return
+            return {}
 
     else:
-        print "\nError - readfiles(filelist): No files in list. Are there files in given directory?\n"
-        return
+        print "\nError - readfiles(filelist): No files in list. Are there files in given file list?\n"
+        return {}
 
 
 def getkeys(firstfile, ftype):
@@ -254,7 +260,7 @@ def add2pastreads(filedone, ftype):
         return
     else:
         with open(pastread, "a") as pr:
-            pr.write(filedone + "\n")
+            # pr.write(filedone + "\n")
             pr.close()
             print "-- Written %s to readfile" % filedone
     return

@@ -34,5 +34,7 @@ if __name__ == '__main__':
     honoursfilelist = rf.findhonfiles(p2honours)
     donorfilelist = rf.finddonfiles(p2donors)
 
-    rf.readfiles(honoursfilelist)
-    rf.readfiles(donorfilelist)
+    hon_dict = rf.readfiles(honoursfilelist)
+    don_dict = rf.readfiles(donorfilelist)
+
+    print len(hon_dict), len(don_dict)
