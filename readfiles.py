@@ -193,7 +193,6 @@ def getkeys(firstfile, ftype):
             with open(firstfile, "r") as f:
                 keys = f.readline().split(delim)
             print "Check -- got keys"
-            print keys
             return keys
         else:
             return []

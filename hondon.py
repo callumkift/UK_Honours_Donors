@@ -26,6 +26,7 @@
 #
 
 import readfiles as rf
+import dbcalls as dbc
 
 if __name__ == '__main__':
     p2honours = rf.getpath2honours()
@@ -36,4 +37,7 @@ if __name__ == '__main__':
 
     hon_dict = rf.readfiles(honoursfilelist)
     don_dict = rf.readfiles(donorfilelist)
+    print "\n\t\t-File reading finished-"
+    print "\n\t\t========================\n"
 
+    dbc.createdb()
