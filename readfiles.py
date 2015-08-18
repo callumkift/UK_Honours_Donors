@@ -160,7 +160,7 @@ def readfiles(filelist):
                 datalist = extractdata(toread, filetype, len(keys))
                 if len(datalist) == len(keys):
                     for i in range(len(keys)):
-                        data_dict[keys[i]]=datalist[i]
+                        data_dict[keys[i].rstrip()]=datalist[i]
                     return data_dict
                 else:
                     print "\nError - #keys != #columns"
@@ -193,6 +193,7 @@ def getkeys(firstfile, ftype):
             with open(firstfile, "r") as f:
                 keys = f.readline().split(delim)
             print "Check -- got keys"
+            print keys
             return keys
         else:
             return []
@@ -224,10 +225,9 @@ def extractdata(datafiles, ftype, ncol):
             with open(file, "r") as f:
                 f.readline()
                 for line in f:
-                    line = line.strip() + "."
+                    line = line.strip()
                     column = line.split(delim)
                     if len(column) == ncol:
-                        # print line
                         for q in range(ncol):
                             data2dlist[q].append(column[q])
                     else:
