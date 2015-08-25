@@ -27,6 +27,7 @@
 
 import readfiles as rf
 import dbcalls as dbc
+import sqlite3
 
 if __name__ == '__main__':
     p2honours = rf.getpath2honours()
@@ -45,3 +46,14 @@ if __name__ == '__main__':
 
     if len(hon_dict) != 0:
         dbc.addhon(hon_dict)
+
+    conn = dbc.connect()
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM HonourList")
+    data = c.fetchall()
+
+    for i in range(len(data)):
+        print data[i]
+
+    conn.close()

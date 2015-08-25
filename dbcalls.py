@@ -32,10 +32,9 @@ def createdb():
 
         c.execute('''CREATE TABLE HonourPerson(id INTEGER PRIMARY KEY, name TEXT, citation TEXT, county TEXT,
                         hl_id INTEGER, ht_id INTEGER, FOREIGN KEY(hl_id) REFERENCES HonourList(id),
-                        FOREIGN KEY(ht_id) REFERENCES HonourType(id))''')
+                        FOREIGN KEY(ht_id) REFERENCES HonourType(id)), UNIQUE(name, h_id, ht_id)''')
 
         # Donations Tables
-
         c.execute("CREATE TABLE DonorEntity(id INTEGER PRIMARY KEY, name TEXT, type TEXT)")
 
         c.execute("CREATE TABLE DonorMaker(id INTEGER PRIMARY KEY, name TEXT, status TEXT)")
@@ -78,6 +77,10 @@ def addhon(hondict):
     year = hondict.values()[6]
     order = hondict.values()[7]
 
+    # print citation[133]
+    # print name[1356]
+    # print county[1356]
+    raw_input("")
     conn = connect()
     c = conn.cursor()
 
@@ -110,8 +113,13 @@ def addhon(hondict):
             c.execute("SELECT MAX(id) FROM HonourType")
             hl_id = c.fetchall()[0][0]
 
-            
+        # HonourPerson Table
+        # name, cite, county, hl, ht
+        c.execute('''INSERT INTO HonourPerson(name, citation, county, hl_id, ht_id)
+                        VALUES(?,?,?,?,?)''', (name[i], citation[i], county[i], hl_id, ht_id, ))
+        conn.commit()
 
-    conn.commit()
+        print i
+    # conn.commit()
     conn.close()
     return
