@@ -82,15 +82,36 @@ def addhon(hondict):
     c = conn.cursor()
 
     for i in range(len(name)):
-        try:
-            c.execute("INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)", (order[i], award[i], level[i], ))
-        except sqlite3.IntegrityError as e:
-            pass
 
-        try:
+        # HonourType table
+        c.execute('''SELECT id FROM HonourType
+                        WHERE h_order=? AND award=? AND level=?''', (order[i], award[i], level[i],))
+        ht_fetch = c.fetchall()
+
+        if len(ht_fetch) != 0:
+            ht_id = ht_fetch[0][0]
+        else:
+            c.execute("INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)", (order[i], award[i], level[i], ))
+            conn.commit()
+            c.execute("SELECT MAX(id) FROM HonourType")
+            ht_id = c.fetchall()[0][0]
+
+
+        # HonourList table
+        c.execute('''SELECT id FROM HonourList
+                        WHERE list=? AND year=?''', (list[i], year[i], ))
+        hl_fetch = c.fetchall()
+
+        if len(hl_fetch) != 0:
+            hl_id = hl_fetch[0][0]
+        else:
             c.execute("INSERT INTO HonourList(list, year) VALUES(?,?)", (list[i], year[i], ))
-        except sqlite3.IntegrityError as e:
-            pass
+            conn.commit()
+            c.execute("SELECT MAX(id) FROM HonourType")
+            hl_id = c.fetchall()[0][0]
+
+            
+
     conn.commit()
     conn.close()
     return
