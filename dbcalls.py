@@ -83,8 +83,12 @@ def addhon(hondict):
 
     for i in range(len(name)):
         try:
-            c.execute(''' INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)
-                    ''', (order[i], award[i], level[i], ))
+            c.execute("INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)", (order[i], award[i], level[i], ))
+        except sqlite3.IntegrityError as e:
+            pass
+
+        try:
+            c.execute("INSERT INTO HonourList(list, year) VALUES(?,?)", (list[i], year[i], ))
         except sqlite3.IntegrityError as e:
             pass
     conn.commit()
