@@ -58,3 +58,16 @@ def connect():
     dbname = ".hondonDB.sqlite"
 
     return sqlite3.connect(dbname)
+
+
+def addhon(hondict):
+    """
+    Adds honours information to the corresponding tables.
+    :param hondict: Dictionary of honours information
+    :return:
+    """
+    conn = connect()
+    c = conn.cursor()
+
+    conn.close()
+    return

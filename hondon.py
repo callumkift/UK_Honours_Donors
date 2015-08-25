@@ -41,3 +41,7 @@ if __name__ == '__main__':
     print "\n\t\t========================\n"
 
     dbc.createdb()
+    print len(hon_dict)
+
+    if len(hon_dict) != 0:
+        dbc.addhon(hon_dict)
