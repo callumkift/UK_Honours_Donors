@@ -33,7 +33,7 @@ def createdb():
 
         c.execute('''CREATE TABLE HonourPerson(id INTEGER PRIMARY KEY, name TEXT, citation TEXT, county TEXT,
                         hl_id INTEGER, ht_id INTEGER, FOREIGN KEY(hl_id) REFERENCES HonourList(id),
-                        FOREIGN KEY(ht_id) REFERENCES HonourType(id), UNIQUE(name, hl_id, ht_id))''')
+                        FOREIGN KEY(ht_id) REFERENCES HonourType(id), UNIQUE(name, citation, hl_id, ht_id))''')
 
         # Donations Tables
         c.execute("CREATE TABLE DonorEntity(id INTEGER PRIMARY KEY, name TEXT, type TEXT)")
@@ -116,6 +116,9 @@ def addhon(hondict):
             conn.commit()
         except sqlite3.IntegrityError:
             pass
+
+        if i % 100 == 0:
+            print i
 
     conn.close()
     return
