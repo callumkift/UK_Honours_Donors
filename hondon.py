@@ -50,7 +50,19 @@ if __name__ == '__main__':
     conn = dbc.connect()
     c = conn.cursor()
 
-    c.execute("SELECT * FROM HonourList")
+    c.execute("SELECT * FROM HonourList ")
+    data = c.fetchall()
+
+    for i in range(len(data)):
+        print data[i]
+
+    c.execute("SELECT * FROM HonourType")
+    data = c.fetchall()
+
+    for i in range(len(data)):
+        print data[i]
+
+    c.execute("SELECT * FROM HonourPerson")
     data = c.fetchall()
 
     for i in range(len(data)):

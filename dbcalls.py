@@ -7,6 +7,7 @@ import sqlite3
 import os
 import re
 
+
 def createdb():
     """
     Creates database and tables if the database does not exist. Creates it in the containing directory as a
@@ -77,51 +78,44 @@ def addhon(hondict):
     year = hondict.values()[6]
     order = hondict.values()[7]
 
-
-    # raw_input("")
     conn = connect()
     c = conn.cursor()
-    #
-    for i in range(2500, len(name)):
 
+    for i in range(len(name)):
+
+        # Fixes lettering problems
         cite = citation[i].decode("utf-8")
         person = name[i].decode("utf-8")
 
         # HonourType table
-        c.execute('''SELECT id FROM HonourType
-                        WHERE h_order=? AND award=? AND level=?''', (order[i], award[i], level[i],))
-        ht_fetch = c.fetchall()
-
-        if len(ht_fetch) != 0:
-            ht_id = ht_fetch[0][0]
-        else:
-            c.execute("INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)", (order[i], award[i], level[i], ))
+        try:
+            c.execute("INSERT INTO HonourType(h_order, award, level) VALUES(?,?,?)", (order[i], award[i], level[i],))
             conn.commit()
             c.execute("SELECT MAX(id) FROM HonourType")
             ht_id = c.fetchall()[0][0]
-
+        except sqlite3.IntegrityError:
+            c.execute('''SELECT id FROM HonourType
+                        WHERE h_order=? AND award=? AND level=?''', (order[i], award[i], level[i],))
+            ht_id = c.fetchall()[0][0]
 
         # HonourList table
-        c.execute('''SELECT id FROM HonourList
-                        WHERE list=? AND year=?''', (list[i], year[i], ))
-        hl_fetch = c.fetchall()
-
-        if len(hl_fetch) != 0:
-            hl_id = hl_fetch[0][0]
-        else:
-            c.execute("INSERT INTO HonourList(list, year) VALUES(?,?)", (list[i], year[i], ))
+        try:
+            c.execute("INSERT INTO HonourList(list, year) VALUES(?,?)", (list[i], year[i],))
             conn.commit()
             c.execute("SELECT MAX(id) FROM HonourType")
             hl_id = c.fetchall()[0][0]
-
-        # print i, hl_id, person,"--" + cite + "--", county[i]
+        except sqlite3.IntegrityError:
+            c.execute('''SELECT id FROM HonourList
+                        WHERE list=? AND year=?''', (list[i], year[i],))
+            hl_id = c.fetchall()[0][0]
 
         # HonourPerson Table
-        c.execute('''INSERT INTO HonourPerson(name, citation, county, hl_id, ht_id)
-                        VALUES(?,?,?,?,?)''', (person, cite, county[i], hl_id, ht_id, ))
-        conn.commit()
-        if i % 250 == 0:
-            print i
+        try:
+            c.execute('''INSERT INTO HonourPerson(name, citation, county, hl_id, ht_id)
+                        VALUES(?,?,?,?,?)''', (person, cite, county[i], hl_id, ht_id,))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            pass
 
     conn.close()
     return

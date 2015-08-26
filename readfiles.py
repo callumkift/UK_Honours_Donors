@@ -160,7 +160,7 @@ def readfiles(filelist):
                 datalist = extractdata(toread, filetype, len(keys))
                 if len(datalist) == len(keys):
                     for i in range(len(keys)):
-                        data_dict[keys[i].rstrip()]=datalist[i]
+                        data_dict[keys[i].rstrip()] = datalist[i]
                     return data_dict
                 else:
                     print "\nError - #keys != #columns"
