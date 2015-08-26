@@ -5,7 +5,7 @@ Contains methods that deal with making and calling the database.
 
 import sqlite3
 import os
-
+import re
 
 def createdb():
     """
@@ -32,7 +32,7 @@ def createdb():
 
         c.execute('''CREATE TABLE HonourPerson(id INTEGER PRIMARY KEY, name TEXT, citation TEXT, county TEXT,
                         hl_id INTEGER, ht_id INTEGER, FOREIGN KEY(hl_id) REFERENCES HonourList(id),
-                        FOREIGN KEY(ht_id) REFERENCES HonourType(id)), UNIQUE(name, h_id, ht_id)''')
+                        FOREIGN KEY(ht_id) REFERENCES HonourType(id), UNIQUE(name, hl_id, ht_id))''')
 
         # Donations Tables
         c.execute("CREATE TABLE DonorEntity(id INTEGER PRIMARY KEY, name TEXT, type TEXT)")
@@ -77,14 +77,15 @@ def addhon(hondict):
     year = hondict.values()[6]
     order = hondict.values()[7]
 
-    # print citation[133]
-    # print name[1356]
-    # print county[1356]
-    raw_input("")
+
+    # raw_input("")
     conn = connect()
     c = conn.cursor()
+    #
+    for i in range(2500, len(name)):
 
-    for i in range(len(name)):
+        cite = citation[i].decode("utf-8")
+        person = name[i].decode("utf-8")
 
         # HonourType table
         c.execute('''SELECT id FROM HonourType
@@ -113,13 +114,14 @@ def addhon(hondict):
             c.execute("SELECT MAX(id) FROM HonourType")
             hl_id = c.fetchall()[0][0]
 
-        # HonourPerson Table
-        # name, cite, county, hl, ht
-        c.execute('''INSERT INTO HonourPerson(name, citation, county, hl_id, ht_id)
-                        VALUES(?,?,?,?,?)''', (name[i], citation[i], county[i], hl_id, ht_id, ))
-        conn.commit()
+        # print i, hl_id, person,"--" + cite + "--", county[i]
 
-        print i
-    # conn.commit()
+        # HonourPerson Table
+        c.execute('''INSERT INTO HonourPerson(name, citation, county, hl_id, ht_id)
+                        VALUES(?,?,?,?,?)''', (person, cite, county[i], hl_id, ht_id, ))
+        conn.commit()
+        if i % 250 == 0:
+            print i
+
     conn.close()
     return
