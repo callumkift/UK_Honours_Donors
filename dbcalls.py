@@ -36,12 +36,16 @@ def createdb():
                         FOREIGN KEY(ht_id) REFERENCES HonourType(id), UNIQUE(name, citation, hl_id, ht_id))''')
 
         # Donations Tables
-        c.execute("CREATE TABLE DonorEntity(id INTEGER PRIMARY KEY, name TEXT, type TEXT)")
+        c.execute('''CREATE TABLE DonorEntity(id INTEGER PRIMARY KEY, name TEXT, type TEXT,
+                        UNIQUE(name, type))''')
 
-        c.execute("CREATE TABLE DonorMaker(id INTEGER PRIMARY KEY, name TEXT, status TEXT)")
+        c.execute('''CREATE TABLE DonorMaker(id INTEGER PRIMARY KEY, name TEXT, status TEXT,
+                        UNIQUE(name, status))''')
 
-        c.execute(''' CREATE TABLE DonorDetails(id INTEGER PRIMARY KEY, type TEXT, date TEXT, value REAL,
-                        dm_id INTEGER, de_id INTEGER, FOREIGN KEY(dm_id) REFERENCES DonorMaker(id),
+        c.execute('''CREATE TABLE DonorDetails(id INTEGER PRIMARY KEY, type TEXT, date TEXT, value REAL,
+                        dm_id INTEGER, de_id INTEGER,
+                        UNIQUE(type, date, value, dm_id, de_id)
+                        FOREIGN KEY(dm_id) REFERENCES DonorMaker(id),
                         FOREIGN KEY(de_id) REFERENCES DonorEntity(id))''')
 
         conn.commit()
@@ -117,8 +121,62 @@ def addhon(hondict):
         except sqlite3.IntegrityError:
             pass
 
-        if i % 100 == 0:
-            print i
+        if i % 1000 == 0:
+            print "hon: %d" %i
+
+    conn.close()
+    return
+
+def adddon(dondict):
+
+    e_name = dondict.values()[3]
+    e_type = dondict.values()[22]
+    m_name = dondict.values()[0]
+    m_status = dondict.values()[1]
+    don_type = dondict.values()[20]
+    don_date = dondict.values()[6]
+    don_value = dondict.values()[14]
+
+
+    conn = connect()
+    c = conn.cursor()
+
+    for i in range(len(e_name)):
+
+        # Fixes lettering problems
+        eName = e_name[i].decode("utf-8")
+        mName = m_name[i].decode("utf-8")
+
+        # DonorEntity table
+        try:
+            c.execute("INSERT INTO DonorEntity(name, type) VALUES(?,?)", (eName, e_type[i], ))
+            conn.commit()
+            c.execute("SELECT MAX(id) FROM DonorEntity")
+            de_id = c.fetchall()[0][0]
+        except sqlite3.IntegrityError:
+            c.execute("SELECT id FROM DonorEntity WHERE name=? AND type=?", (eName, e_type[i], ))
+            de_id = c.fetchall()[0][0]
+
+        # DonorMaker table
+        try:
+            c.execute("INSERT INTO DonorMaker(name, status) VALUES(?,?)", (mName, m_status[i], ))
+            conn.commit()
+            c.execute("SELECT MAX(id) FROM DonorMaker")
+            dm_id = c.fetchall()[0][0]
+        except sqlite3.IntegrityError:
+            c.execute("SELECT id FROM DonorMaker WHERE name=? AND status=?", (mName, m_status[i], ))
+            dm_id = c.fetchall()[0][0]
+
+        # DonorDetails table
+        try:
+            c.execute('''INSERT INTO DonorDetails(type, date, value, dm_id, de_id)
+                            VALUES(?,?,?,?,?)''', (don_type[i], don_date[i], don_value[i], dm_id, de_id))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            pass
+
+        if i % 1000 == 0:
+            print "don: %d" %i
 
     conn.close()
     return

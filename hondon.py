@@ -42,30 +42,29 @@ if __name__ == '__main__':
     print "\n\t\t========================\n"
 
     dbc.createdb()
-    print len(hon_dict)
 
     if len(hon_dict) != 0:
+        print "--- Adding honours to DB"
         dbc.addhon(hon_dict)
+
+    print "\n\t\t-Added honours to DB-"
+    print "\n\t\t========================\n"
+
+
+    if len(don_dict) != 0:
+        print "--- Adding donors to DB"
+        dbc.adddon(don_dict)
+
+    print "\n\t\t-Added donors to DB-"
+    print "\n\t\t========================\n"
 
     conn = dbc.connect()
     c = conn.cursor()
 
-    c.execute("SELECT * FROM HonourList ")
+    c.execute("SELECT MAX(id) FROM DonorDetails")
     data = c.fetchall()
 
     for i in range(len(data)):
         print data[i]
 
-    c.execute("SELECT * FROM HonourType")
-    data = c.fetchall()
-
-    for i in range(len(data)):
-        print data[i]
-
-    c.execute("SELECT * FROM HonourPerson")
-    data = c.fetchall()
-
-    for i in range(len(data)):
-        print data[i]
-
-    conn.close()
+    conn.close
