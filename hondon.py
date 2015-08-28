@@ -61,3 +61,4 @@ if __name__ == '__main__':
 
     dv.mosthonours()
     dv.mostdonations()
+    dv.highdonations()

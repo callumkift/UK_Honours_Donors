@@ -224,3 +224,29 @@ def get_ind_mostdonations():
 
     conn.close()
     return data
+
+def get_ind_highdon():
+    """
+    Gets the 10 individuals who have donated the most money to a political party
+    :return: A list of the 10 individuals who have donated the most money to a political party
+    """
+
+    conn = connect()
+    c = conn.cursor()
+
+    donMakerType = "Individual"
+    donEntityType = "Political Party"
+
+    c.execute('''SELECT DonorMaker.name, DonorEntity.name, sum(DonorDetails.value), count(DonorDetails.dm_id)
+                    FROM DonorDetails
+                    JOIN DonorMaker ON DonorDetails.dm_id = DonorMaker.id
+                    JOIN DonorEntity ON DonorDetails.de_id =  DonorEntity.id
+                    WHERE DonorMaker.status = ? AND DonorEntity.type = ?
+                    GROUP BY DonorDetails.dm_id
+                    ORDER BY sum(DonorDetails.value) DESC LIMIT 10''',
+                    (donMakerType, donEntityType, ))
+
+    data = c.fetchall()
+
+    conn.close()
+    return data

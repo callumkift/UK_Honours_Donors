@@ -34,3 +34,16 @@ def mostdonations():
         print "%s has donated to the %s --%3d times" %(data[i][0], data[i][2], data[i][1])
 
     return
+
+def highdonations():
+    """
+    Gets and prints the 10 highest individual donors to a political pasrty
+    :return:
+    """
+    print "\n-- highest donors"
+    data = dbc.get_ind_highdon()
+
+    for i in range(len(data)):
+        # print data[i]
+        print "%s has donated %2d times to the %s, totally %.2f GBP" %(data[i][0], data[i][3], data[i][1], data[i][2])
+    return
