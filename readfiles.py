@@ -259,7 +259,7 @@ def add2pastreads(filedone, ftype):
         return
     else:
         with open(pastread, "a") as pr:
-            # pr.write(filedone + "\n")
+            pr.write(filedone + "\n")
             pr.close()
             print "-- Written %s to readfile" % filedone
     return

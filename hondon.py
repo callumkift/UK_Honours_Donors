@@ -27,6 +27,7 @@
 
 import readfiles as rf
 import dbcalls as dbc
+import datavisualisation as dv
 import sqlite3
 
 if __name__ == '__main__':
@@ -58,13 +59,5 @@ if __name__ == '__main__':
     print "\n\t\t-Added donors to DB-"
     print "\n\t\t========================\n"
 
-    conn = dbc.connect()
-    c = conn.cursor()
-
-    c.execute("SELECT MAX(id) FROM DonorDetails")
-    data = c.fetchall()
-
-    for i in range(len(data)):
-        print data[i]
-
-    conn.close
+    dv.mosthonours()
+    dv.mostdonations()

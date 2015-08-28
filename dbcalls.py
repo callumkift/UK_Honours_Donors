@@ -180,3 +180,47 @@ def adddon(dondict):
 
     conn.close()
     return
+
+
+def counthonours():
+    """
+    Counts the number of honours each person has received
+    :return: A list, in desc. order, of each person and the number of honours they have received
+    """
+    conn = connect()
+    c = conn.cursor()
+
+    c.execute('''SELECT name, count(name) FROM HonourPerson
+                    GROUP BY name
+                    ORDER BY count(name) DESC''')
+
+    data = c.fetchall()
+
+    conn.close()
+    return data
+
+
+def get_ind_mostdonations():
+    """
+    Gets the 10 individuals who have donated the most times to a political party
+    :return: A list of the 10 individuals who have donated the most times to a political party
+    """
+    conn = connect()
+    c = conn.cursor()
+
+    donMakerType = "Individual"
+    donEntityType = "Political Party"
+
+    c.execute('''SELECT DonorMaker.name, count(DonorDetails.dm_id), DonorEntity.name
+                    FROM DonorDetails
+                    JOIN DonorMaker ON DonorDetails.dm_id = DonorMaker.id
+                    JOIN DonorEntity ON DonorDetails.de_id =  DonorEntity.id
+                    WHERE DonorMaker.status = ? AND DonorEntity.type = ?
+                    GROUP BY DonorDetails.dm_id
+                    ORDER BY count(DonorDetails.dm_id) DESC LIMIT 10''',
+                    (donMakerType, donEntityType, ))
+
+    data = c.fetchall()
+
+    conn.close()
+    return data
