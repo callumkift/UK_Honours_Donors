@@ -49,7 +49,10 @@ def highdonations():
     return
 
 def honour_donors():
-
+    """
+    Gets and prints the names of people who have donated and received honours.
+    :return:
+    """
     print "\n--donated and has honour"
     data = dbc.get_hon_don_joints()
 

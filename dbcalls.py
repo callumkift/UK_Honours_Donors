@@ -253,6 +253,10 @@ def get_ind_highdon():
 
 
 def get_hon_don_joints():
+    """
+    Gets the names of people who have dnated and received honours
+    :return: A list of people who have made donations and have received honours
+    """
     conn = connect()
     c = conn.cursor()
 
