@@ -47,3 +47,12 @@ def highdonations():
         # print data[i]
         print "%s has donated %2d times to the %s, totally %.2f GBP" %(data[i][0], data[i][3], data[i][1], data[i][2])
     return
+
+def honour_donors():
+
+    print "\n--donated and has honour"
+    data = dbc.get_hon_don_joints()
+
+    for i in range(len(data)):
+        print data[i]
+    return

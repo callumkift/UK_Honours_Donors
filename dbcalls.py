@@ -122,13 +122,13 @@ def addhon(hondict):
             pass
 
         if i % 1000 == 0:
-            print "hon: %d" %i
+            print "hon: %d" % i
 
     conn.close()
     return
 
-def adddon(dondict):
 
+def adddon(dondict):
     e_name = dondict.values()[3]
     e_type = dondict.values()[22]
     m_name = dondict.values()[0]
@@ -136,7 +136,6 @@ def adddon(dondict):
     don_type = dondict.values()[20]
     don_date = dondict.values()[6]
     don_value = dondict.values()[14]
-
 
     conn = connect()
     c = conn.cursor()
@@ -149,22 +148,22 @@ def adddon(dondict):
 
         # DonorEntity table
         try:
-            c.execute("INSERT INTO DonorEntity(name, type) VALUES(?,?)", (eName, e_type[i], ))
+            c.execute("INSERT INTO DonorEntity(name, type) VALUES(?,?)", (eName, e_type[i],))
             conn.commit()
             c.execute("SELECT MAX(id) FROM DonorEntity")
             de_id = c.fetchall()[0][0]
         except sqlite3.IntegrityError:
-            c.execute("SELECT id FROM DonorEntity WHERE name=? AND type=?", (eName, e_type[i], ))
+            c.execute("SELECT id FROM DonorEntity WHERE name=? AND type=?", (eName, e_type[i],))
             de_id = c.fetchall()[0][0]
 
         # DonorMaker table
         try:
-            c.execute("INSERT INTO DonorMaker(name, status) VALUES(?,?)", (mName, m_status[i], ))
+            c.execute("INSERT INTO DonorMaker(name, status) VALUES(?,?)", (mName, m_status[i],))
             conn.commit()
             c.execute("SELECT MAX(id) FROM DonorMaker")
             dm_id = c.fetchall()[0][0]
         except sqlite3.IntegrityError:
-            c.execute("SELECT id FROM DonorMaker WHERE name=? AND status=?", (mName, m_status[i], ))
+            c.execute("SELECT id FROM DonorMaker WHERE name=? AND status=?", (mName, m_status[i],))
             dm_id = c.fetchall()[0][0]
 
         # DonorDetails table
@@ -176,7 +175,7 @@ def adddon(dondict):
             pass
 
         if i % 1000 == 0:
-            print "don: %d" %i
+            print "don: %d" % i
 
     conn.close()
     return
@@ -218,12 +217,13 @@ def get_ind_mostdonations():
                     WHERE DonorMaker.status = ? AND DonorEntity.type = ?
                     GROUP BY DonorDetails.dm_id
                     ORDER BY count(DonorDetails.dm_id) DESC LIMIT 10''',
-                    (donMakerType, donEntityType, ))
+              (donMakerType, donEntityType,))
 
     data = c.fetchall()
 
     conn.close()
     return data
+
 
 def get_ind_highdon():
     """
@@ -244,7 +244,22 @@ def get_ind_highdon():
                     WHERE DonorMaker.status = ? AND DonorEntity.type = ?
                     GROUP BY DonorDetails.dm_id
                     ORDER BY sum(DonorDetails.value) DESC LIMIT 10''',
-                    (donMakerType, donEntityType, ))
+              (donMakerType, donEntityType,))
+
+    data = c.fetchall()
+
+    conn.close()
+    return data
+
+
+def get_hon_don_joints():
+    conn = connect()
+    c = conn.cursor()
+
+    c.execute('''SELECT DonorMaker.name FROM HonourPerson JOIN DonorMaker
+                    ON HonourPerson.name = DonorMaker.name
+                    WHERE HonourPerson.name LIKE DonorMaker.name
+                    COLLATE NOCASE''')
 
     data = c.fetchall()
 
